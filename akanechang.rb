@@ -18,7 +18,7 @@ get "/" do
   # header
   body =<<EOF
 <!DOCTYPE html>
-  <html>
+  <html lang="ja">
     <head>
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>Akanechang !</title>
