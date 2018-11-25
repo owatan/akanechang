@@ -11,6 +11,7 @@ TOOT_LIST = "https://raw.githubusercontent.com/Akane-Blue/gallery/master/list.tx
 get "/" do
   TOOT_URL  = Net::HTTP.get( URI.parse(TOOT_LIST) ).split(" ").sample
   #TOOT_URL  = "https://pawoo.net/@pacochi/62284170"
+  #TOOT_URL  = "https://pawoo.net/@pacochi/100328915736955380"
   TOOT_HOST, TOOT_ID  = URI.parse(TOOT_URL).host, URI.parse(TOOT_URL).path.split("/").last
   TOOT_JSON = Net::HTTP.get( URI.parse("https://#{TOOT_HOST}/api/v1/statuses/#{TOOT_ID}") )
   TOOT_PARSED = JSON.parse(TOOT_JSON)
@@ -35,7 +36,13 @@ get "/" do
 EOF
 
   JSON.parse(TOOT_JSON)["media_attachments"].each do |img|
-    body += "<img src='#{img["text_url"]}' alt='#{img["text_url"]}' style='max-width: 100%' />"
+    if img["type"] == "gifv"
+      body += "<video controls autoplay name='media'>"
+      body += "<source src='#{img["text_url"]}' type='video/mp4'>"
+      body += "</video>"
+    else
+      body += "<img src='#{img["text_url"]}' alt='#{img["text_url"]}' style='max-width: 100%' />"
+    end
   end
 
   body += "<p>#{Sanitize.fragment(JSON.parse(TOOT_JSON)["content"])}</p>"
