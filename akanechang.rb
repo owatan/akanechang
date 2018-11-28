@@ -9,12 +9,12 @@ require "sinatra"
 TOOT_LIST = "https://raw.githubusercontent.com/Akane-Blue/gallery/master/list.txt"
 
 get "/" do
-  TOOT_URL  = Net::HTTP.get( URI.parse(TOOT_LIST) ).split(" ").sample
-  #TOOT_URL  = "https://pawoo.net/@pacochi/62284170"
-  #TOOT_URL  = "https://pawoo.net/@pacochi/100328915736955380"
-  TOOT_HOST, TOOT_ID  = URI.parse(TOOT_URL).host, URI.parse(TOOT_URL).path.split("/").last
-  TOOT_JSON = Net::HTTP.get( URI.parse("https://#{TOOT_HOST}/api/v1/statuses/#{TOOT_ID}") )
-  TOOT_PARSED = JSON.parse(TOOT_JSON)
+  toot_url  = Net::HTTP.get( URI.parse(TOOT_LIST) ).split(" ").sample
+  #toot_url  = "https://pawoo.net/@pacochi/62284170"
+  #toot_url  = "https://pawoo.net/@pacochi/100328915736955380"
+  toot_host, toot_id  = URI.parse(toot_url).host, URI.parse(toot_url).path.split("/").last
+  toot_json = Net::HTTP.get( URI.parse("https://#{toot_host}/api/v1/statuses/#{toot_id}") )
+  toot_parsed = JSON.parse(toot_json)
 
   # header
   body =<<EOF
@@ -35,7 +35,7 @@ get "/" do
     <body>
 EOF
 
-  JSON.parse(TOOT_JSON)["media_attachments"].each do |img|
+  JSON.parse(toot_json)["media_attachments"].each do |img|
     if img["type"] == "gifv"
       body += "<video controls autoplay name='media'>"
       body += "<source src='#{img["text_url"]}' type='video/mp4'>"
@@ -45,12 +45,12 @@ EOF
     end
   end
 
-  body += "<p>#{Sanitize.fragment(JSON.parse(TOOT_JSON)["content"])}</p>"
+  body += "<p>#{Sanitize.fragment(JSON.parse(toot_json)["content"])}</p>"
 
   # footer
   body += "<hr />"
-  body += "<p>#{TOOT_PARSED["account"]["display_name"]} - @#{TOOT_PARSED["account"]["username"]} <br />"
-  body += "<a href='#{TOOT_URL}'>#{TOOT_URL}</a></p>"
+  body += "<p>#{toot_parsed["account"]["display_name"]} - @#{toot_parsed["account"]["username"]} <br />"
+  body += "<a href='#{toot_url}'>#{toot_url}</a></p>"
   body += "</body>"
   body += "</html>"
 
